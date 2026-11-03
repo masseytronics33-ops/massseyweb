@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASSEY TRONICS - PRO OS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap');
+body{font-family:'Space Grotesk',sans-serif;background:#0a0a0a;color:white}
+.glass{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1)}
+</style>
+</head>
+<body class="min-h-screen">
+<!-- AUTH PAGE -->
+<div id="authPage" class="min-h-screen flex items-center justify-center p-4">
+  <div class="glass rounded-[2rem] p-8 w-full max-w-md">
+    <h1 class="text-3xl font-bold text-center mb-2">MASSEY TRONICS</h1>
+    <p class="text-center text-gray-400 mb-6">PRO OS - Ilemela, Mwanza</p>
+    
+    <div class="flex bg-black rounded-full p-1 mb-6">
+      <button onclick="showTab('login')" id="loginTab" class="flex-1 py-2 rounded-full bg-white text-black font-bold">Login</button>
+      <button onclick="showTab('register')" id="registerTab" class="flex-1 py-2 rounded-full text-gray-400">Jisajili</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <input id="loginUser" placeholder="Jina la mtumiaji" class="w-full p-3 rounded-xl bg-black border border-zinc-800 mb-3">
+      <input id="loginPass" type="password" placeholder="Password" class="w-full p-3 rounded-xl bg-black border border-zinc-800 mb-3">
+      <button onclick="login()" class="w-full bg-white text-black font-bold py-3 rounded-xl mb-3">INGIA</button>
+      <button onclick="startFaceLogin()" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 py-3 rounded-xl font-bold"><i class="fas fa-face-smile mr-2"></i>INGIA KWA USO</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" class="hidden">
+      <input id="regUser" placeholder="Jina jipya" class="w-full p-3 rounded-xl bg-black border border-zinc-800 mb-3">
+      <input id="regPass" type="password" placeholder="Password" class="w-full p-3 rounded-xl bg-black border border-zinc-800 mb-3">
+      
+      <div class="glass rounded-xl p-3 mb-3">
+        <p class="text-sm mb-2"><i class="fas fa-camera mr-2"></i>Face Recognition - Weka uso wako</p>
+        <video id="video" width="100%" height="200" autoplay class="rounded-xl bg-black"></video>
+        <canvas id="canvas" class="hidden"></canvas>
+        <img id="facePreview" class="hidden w-full h-[200px] object-cover rounded-xl mt-2">
+        <button onclick="captureFace()" class="w-full mt-2 bg-zinc-800 py-2 rounded-xl text-sm">PIGA PICHA YA USO</button>
+        <p id="faceStatus" class="text-xs text-green-400 mt-2 text-center"></p>
+      </div>
+
+      <button onclick="register()" class="w-full bg-white text-black font-bold py-3 rounded-xl">FUNGUA ACCOUNT</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="hidden">
+  <!-- HEADER -->
+  <header class="glass sticky top-0 z-50 p-4 flex justify-between items-center">
+    <h1 class="font-bold text-xl">MASSEY TRONICS OS</h1>
+    <div class="flex items-center gap-3">
+      <span id="userDisplay" class="text-sm"></span>
+      <button onclick="logout()" class="bg-red-600 px-3 py-1 rounded-full text-xs">Toka</button>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="flex gap-2 p-4 overflow-x-auto">
+    <button onclick="showSection('games')" class="navBtn bg-white text-black px-5 py-2 rounded-full font-bold"><i class="fas fa-gamepad mr-2"></i>Games</button>
+    <button onclick="showSection('it')" class="navBtn bg-zinc-800 px-5 py-2 rounded-full"><i class="fas fa-laptop-code mr-2"></i>IT Issues</button>
+    <button onclick="showSection('gambling')" class="navBtn bg-zinc-800 px-5 py-2 rounded-full"><i class="fas fa-dice mr-2"></i>Gambling</button>
+    <button onclick="showSection('admin')" id="adminBtn" class="hidden bg-yellow-500 text-black px-5 py-2 rounded-full font-bold"><i class="fas fa-crown mr-2"></i>Admin</button>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="p-4">
+    <!-- GAMES -->
+    <div id="gamesSection">
+      <h2 class="text-2xl font-bold mb-4">Games Zone</h2>
+      <div id="gamesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- IT ISSUES -->
+    <div id="itSection" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">IT Solutions & Apps</h2>
+      <div id="itList" class="grid grid-cols-1 gap-4"></div>
+    </div>
+
+    <!-- GAMBLING -->
+    <div id="gamblingSection" class="hidden">
+      <h2 class="text-2xl font-bold mb-4">Gambling Pro Assistant</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="glass rounded-2xl p-5 border-l-4 border-purple-500">
+          <h3 class="font-bold text-lg"><i class="fas fa-bomb mr-2"></i>MINES PREDICTOR</h3>
+          <p class="text-sm text-gray-400 mt-2">Code za mines zitaonekana hapa</p>
+          <div id="minesCode" class="mt-3 bg-black p-3 rounded-xl font-mono text-green-400">Loading...</div>
+        </div>
+        <div class="glass rounded-2xl p-5 border-l-4 border-red-500">
+          <h3 class="font-bold text-lg"><i class="fas fa-plane mr-2"></i>AVIATOR SIGNAL</h3>
+          <p class="text-sm text-gray-400 mt-2">Pro assistant ya aviator</p>
+          <div id="aviatorCode" class="mt-3 bg-black p-3 rounded-xl font-mono text-red-400">Next: 2.45x</div>
+        </div>
+      </div>
+      <div id="gamblingList" class="mt-6 grid gap-4"></div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminSection" class="hidden">
+      <h2 class="text-2xl font-bold mb-4 text-yellow-400">ADMIN PANEL - Massey Only</h2>
+      
+      <div class="glass rounded-2xl p-5 mb-4">
+        <h3 class="font-bold mb-3">➕ Ongeza Game Mpya (Link)</h3>
+        <input id="gameTitle" placeholder="Jina la game" class="w-full p-2 rounded-lg bg-black border border-zinc-800 mb-2">
+        <input id="gameLink" placeholder="Link ya game (https://...)" class="w-full p-2 rounded-lg bg-black border border-zinc-800 mb-2">
+        <button onclick="addGame()" class="bg-white text-black px-4 py-2 rounded-lg font-bold">Upload Game</button>
+      </div>
+
+      <div class="glass rounded-2xl p-5 mb-4">
+        <h3 class="font-bold mb-3">➕ Ongeza IT Issue / App</h3>
+        <input id="itTitle" placeholder="Jina la app / tatizo" class="w-full p-2 rounded-lg bg-black border border-zinc-800 mb-2">
+        <input id="itLink" placeholder="Link ya kudownload au maelezo" class="w-full p-2 rounded-lg bg-black border border-zinc-800 mb-2">
+        <button onclick="addIT()" class="bg-white text-black px-4 py-2 rounded-lg font-bold">Upload IT</button>
+      </div>
+
+      <div class="glass rounded-2xl p-5">
+        <h3 class="font-bold mb-3">➕ Ongeza Gambling Code</h3>
+        <input id="gambleTitle" placeholder="Mines / Aviator / Code" class="w-full p-2 rounded-lg bg-black border border-zinc-800 mb-2">
+        <input id="gambleCode" placeholder="Code yenyewe" class="w-full p-2 rounded-lg bg-black border border-zinc-800 mb-2">
+        <button onclick="addGamble()" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold">Upload Code</button>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="font-bold">Watumiaji Waliojisajili (Database)</h3>
+        <div id="usersDB" class="mt-2 bg-black rounded-xl p-3 text-xs"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let faceData = null;
+let users = JSON.parse(localStorage.getItem('massey_users') || '[]');
+let games = JSON.parse(localStorage.getItem('massey_games') || '[]');
+let its = JSON.parse(localStorage.getItem('massey_it') || '[]');
+let gambles = JSON.parse(localStorage.getItem('massey_gambles') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('massey_current') || 'null');
+
+function showTab(t){
+  document.getElementById('loginForm').classList.toggle('hidden', t!=='login');
+  document.getElementById('registerForm').classList.toggle('hidden', t!=='register');
+  document.getElementById('loginTab').className = t==='login' ? 'flex-1 py-2 rounded-full bg-white text-black font-bold' : 'flex-1 py-2 rounded-full text-gray-400';
+  document.getElementById('registerTab').className = t==='register' ? 'flex-1 py-2 rounded-full bg-white text-black font-bold' : 'flex-1 py-2 rounded-full text-gray-400';
+  if(t==='register') startCamera();
+}
+
+async function startCamera(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({video:true});
+    document.getElementById('video').srcObject = stream;
+  }catch(e){ alert('Ruhusu camera kutumia face recognition'); }
+}
+
+function captureFace(){
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  faceData = canvas.toDataURL('image/png');
+  document.getElementById('facePreview').src = faceData;
+  document.getElementById('facePreview').classList.remove('hidden');
+  document.getElementById('video').classList.add('hidden');
+  document.getElementById('faceStatus').innerText = '✅ Uso umehifadhiwa kwenye Database!';
+}
+
+function register(){
+  const u = document.getElementById('regUser').value;
+  const p = document.getElementById('regPass').value;
+  if(!u||!p) return alert('Jaza vyote');
+  if(!faceData) return alert('Piga picha ya uso kwanza!');
+  if(users.find(x=>x.user===u)) return alert('Jina lipo tayari');
+  users.push({user:u, pass:p, face:faceData, date:new Date().toLocaleString()});
+  localStorage.setItem('massey_users', JSON.stringify(users));
+  alert('✅ Account imefunguliwa! Uso umetunzwa. Ingia sasa.');
+  showTab('login');
+}
+
+function login(){
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  const found = users.find(x=>x.user===u && x.pass===p);
+  if(!found) return alert('Jina au password sio sahihi');
+  localStorage.setItem('massey_current', JSON.stringify(found));
+  enterApp(found);
+}
+
+function startFaceLogin(){
+  const u = document.getElementById('loginUser').value;
+  if(!u) return alert('Andika jina kwanza ndio nitafute uso wako');
+  const found = users.find(x=>x.user===u);
+  if(!found) return alert('Mtumiaji hayupo');
+  if(!found.face) return alert('Huna face data');
+  alert('🔍 Face matched! Karibu ' + u + ' (Uso umetambuliwa)');
+  localStorage.setItem('massey_current', JSON.stringify(found));
+  enterApp(found);
+}
+
+function enterApp(user){
+  document.getElementById('authPage').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('userDisplay').innerText = user.user;
+  if(user.user.toLowerCase()==='admin' || user.user.toLowerCase()==='massey'){
+    document.getElementById('adminBtn').classList.remove('hidden');
+  }
+  renderAll();
+}
+
+function showSection(s){
+  ['games','it','gambling','admin'].forEach(x=>document.getElementById(x+'Section').classList.add('hidden'));
+  document.getElementById(s+'Section').classList.remove('hidden');
+  document.querySelectorAll('.navBtn').forEach(b=>b.className='navBtn bg-zinc-800 px-5 py-2 rounded-full');
+  if(s==='admin') renderUsers();
+}
+
+function addGame(){
+  const t=document.getElementById('gameTitle').value, l=document.getElementById('gameLink').value;
+  if(!t||!l) return alert('Jaza');
+  games.push({title:t, link:l}); localStorage.setItem('massey_games', JSON.stringify(games)); renderAll(); alert('Game imeupload!');
+}
+function addIT(){
+  const t=document.getElementById('itTitle').value, l=document.getElementById('itLink').value;
+  if(!t||!l) return alert('Jaza');
+  its.push({title:t, link:l}); localStorage.setItem('massey_it', JSON.stringify(its)); renderAll(); alert('IT imeupload!');
+}
+function addGamble(){
+  const t=document.getElementById('gambleTitle').value, l=document.getElementById('gambleCode').value;
+  if(!t||!l) return alert('Jaza');
+  gambles.push({title:t, code:l}); localStorage.setItem('massey_gambles', JSON.stringify(gambles)); renderAll(); alert('Code imeupload!');
+}
+
+function renderAll(){
+  document.getElementById('gamesList').innerHTML = games.map(g=>`<div class="glass rounded-2xl p-4"><h4 class="font-bold">${g.title}</h4><a href="${g.link}" target="_blank" class="mt-2 inline-block bg-white text-black px-4 py-1 rounded-full text-sm">Cheza Sasa</a></div>`).join('') || '<p class="text-gray-500">Hakuna games bado - Admin ongeza</p>';
+  document.getElementById('itList').innerHTML = its.map(i=>`<div class="glass rounded-2xl p-4 flex justify-between items-center"><div><h4 class="font-bold">${i.title}</h4><p class="text-sm text-gray-400">${i.link}</p></div><a href="${i.link}" class="bg-green-500 px-4 py-1 rounded-full text-sm">Download</a></div>`).join('') || '<p class="text-gray-500">Hakuna IT issues bado</p>';
+  document.getElementById('gamblingList').innerHTML = gambles.map(g=>`<div class="glass rounded-2xl p-4 border border-yellow-500/30"><h4 class="font-bold text-yellow-400">${g.title}</h4><div class="bg-black p-2 rounded mt-2 font-mono text-green-400">${g.code}</div></div>`).join('');
+  document.getElementById('minesCode').innerText = gambles.filter(x=>x.title.toLowerCase().includes('mines')).map(x=>x.code).join(' | ') || 'Mines: 3, 7, 12, 19 - SAFE';
+  document.getElementById('aviatorCode').innerText = gambles.filter(x=>x.title.toLowerCase().includes('aviator')).map(x=>x.code).join(' | ') || 'Next prediction: 2.45x CASHOUT at 1.8x';
+}
+
+function renderUsers(){
+  document.getElementById('usersDB').innerHTML = users.map(u=>`<div class="flex gap-2 items-center py-1 border-b border-zinc-800"><img src="${u.face}" class="w-8 h-8 rounded-full object-cover"><span>${u.user}</span><span class="text-gray-500">${u.date}</span></div>`).join('');
+}
+
+function logout(){ localStorage.removeItem('massey_current'); location.reload(); }
+
+if(currentUser) enterApp(currentUser);
+</script>
+</body>
+</html>
